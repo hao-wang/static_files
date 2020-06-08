@@ -195,6 +195,17 @@ function get_topics(item_list) {
     return topic_list;
 }
 
+function get_multi_path_nodes(network, current_id, end, path_nodes) {
+    if (current_id === end) {
+        path_nodes.push(current_id);
+    } else {
+        path_nodes.push(current_id);
+        for (var pid of network.getConnectedNodes(current_id, "from")) {
+            get_multi_path_nodes(network, pid, end, path_nodes);
+        }
+    }
+}
+
 function get_path_nodes(network, start, end) {
     var current_id = start;
     var path_nodes = [];
@@ -206,7 +217,7 @@ function get_path_nodes(network, start, end) {
     return path_nodes;
 }
 
-function change_path_options(network, vis_nodes, start, end, color) {
+function change_path_color(network, vis_nodes, start, end, color) {
     //var error_client = document.getElementById('cltbox').value;
     //var error_target = document.getElementById('tgtbox').value;
     var current_id = start;
