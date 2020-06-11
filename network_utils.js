@@ -1,21 +1,17 @@
 function get_siblings(network, device) {
-    var parent = null;
     var parents = network.getConnectedNodes(device, "from");
 
-    if (parents.length < 1) {
-        // arrive at root (source)
-        return [parent, []]
-    } else if (parents.length > 1) {
-        alert(`${device} has multiple parents. It's not supported.`);
-    } else {
-        parent = parents[0];
+    var parent_child_list = [];
+    for (parent of parents) {
         var sbl = network.getConnectedNodes(parent, "to");
         const index = sbl.indexOf(error_client);
         if (index >= 0) {
             sbl.splice(index, 1);
         }
-        return [parent, sbl];
+        parent_child_list.push([parent, sbl]);
     }
+
+    return parent_child_list;
 }
 
 var options = {
@@ -185,6 +181,9 @@ var options = {
 };
 
 function get_topics(item_list) {
+    /*
+    * Given an item list, return those with corresponding topics (have structures therein).
+    * */
     var topic_list = [];
     for (var item of item_list) {
         var check_tuple = check_dict[item][0];
@@ -195,13 +194,20 @@ function get_topics(item_list) {
     return topic_list;
 }
 
-function get_multi_path_nodes(network, current_id, end, path_nodes) {
+function get_multi_path_nodes(network, current_id, end, path_nodes, path_edges) {
     if (current_id === end) {
         path_nodes.push(current_id);
     } else {
         path_nodes.push(current_id);
-        for (var pid of network.getConnectedNodes(current_id, "from")) {
-            get_multi_path_nodes(network, pid, end, path_nodes);
+        var parents = network.getConnectedNodes(current_id, "from");
+
+        if (parents.length > 1) ambiguity_nodes.push(current_id);
+
+        for (pid of parents) {
+            path_edges.push(pid + "-" + current_id);
+            console.log(path_edges);
+            console.log(path_nodes);
+            get_multi_path_nodes(network, pid, end, path_nodes, path_edges);
         }
     }
 }
@@ -215,6 +221,27 @@ function get_path_nodes(network, start, end) {
     }
     path_nodes.push(current_id);
     return path_nodes;
+}
+
+
+function reset_path_color(edges, nodes, color) {
+    for (edge of edges) {
+        var current_edge = vis_edges.get(edge);
+        current_edge.color = {
+            color: color,
+        };
+        vis_edges.update(current_edge);
+    }
+
+    for (node of nodes) {
+        var current_node = vis_nodes.get(node);
+        //var current_edge = network.body.data.nodes._data.get(current_id);
+        current_node.color = {
+            border: color,
+            background: color,
+        };
+        vis_nodes.update(current_node);
+    }
 }
 
 function change_path_color(network, vis_nodes, start, end, color) {
