@@ -268,34 +268,16 @@ function change_path_color(network, vis_nodes, start, end, color) {
     }
 }
 
-function get_check_methods(siblings, check_dict) {
-    var n;
-    var methods = [];
-    for (n of siblings) {
-        if (n in check_dict) {
-            methods.push(...check_dict[n]);
+function get_edges(nodes, vis_edges) {
+    var edgeTypes = [];
+    for (var n of nodes) {
+        var eids = network.getConnectedEdges(n);
+        for (var eid of eids) {
+            var edge = vis_edges.get(eid);
+            edgeTypes.push(edge.title);
         }
     }
-    methods.sort(function(a, b) {
-        return a[a.length-3] - b[b.length-3];
-    });
-
-    return methods;
+    return edgeTypes;
 }
 
-
-function get_fix_methods(nodes, fix_dict) {
-    var n;
-    var methods = [];
-    for (n of nodes) {
-        if (n in fix_dict) {
-            methods.push(...fix_dict[n]);
-        }
-    }
-    methods.sort(function(a, b) {
-        return a[2] - b[2];
-    });
-
-    return methods;
-}
 
