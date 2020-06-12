@@ -1,3 +1,6 @@
+// TODO:
+// 1. tgtbox 改为 topicbox； 图搜索时终点 hardcode 为root_xx
+
 function get_siblings(network, device) {
     var parents = network.getConnectedNodes(device, "from");
 
@@ -179,20 +182,6 @@ var options = {
         }
     }
 };
-
-function get_topics(item_list) {
-    /*
-    * Given an item list, return those with corresponding topics (have structures therein).
-    * */
-    var topic_list = [];
-    for (var item of item_list) {
-        var check_tuple = check_dict[item][0];
-        var subtopic_id = check_tuple[check_tuple.length - 1];
-        if (subtopic_id >= 0) topic_list.push([item, subtopic_id]);
-    }
-
-    return topic_list;
-}
 
 function get_multi_path_nodes(network, current_id, end, path_nodes, path_edges) {
     if (current_id === end) {
