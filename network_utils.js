@@ -2,11 +2,11 @@
 // 1. tgtbox 改为 topicbox； 图搜索时终点 hardcode 为root_xx
 
 function get_siblings(network, device) {
-    var parents = network.getConnectedNodes(device, "from");
+    let parents = network.getConnectedNodes(device, "from");
 
-    var parent_child_list = [];
+    let parent_child_list = [];
     for (parent of parents) {
-        var sbl = network.getConnectedNodes(parent, "to");
+        let sbl = network.getConnectedNodes(parent, "to");
         const index = sbl.indexOf(error_client);
         if (index >= 0) {
             sbl.splice(index, 1);
@@ -14,6 +14,9 @@ function get_siblings(network, device) {
         parent_child_list.push([parent, sbl]);
     }
 
+    //if (bypassable.includes(device)) {
+    //    parent_child_list.push([parent, 'short_circuit']);
+    //}
     return parent_child_list;
 }
 
@@ -190,28 +193,14 @@ function get_multi_path_nodes(network, current_id, end, path_nodes, path_edges) 
         path_nodes.push(current_id);
         var parents = network.getConnectedNodes(current_id, "from");
 
-        if (parents.length > 1) ambiguity_nodes.push(current_id);
+        //if (parents.length > 1) ambiguity_nodes.push(current_id);
 
         for (pid of parents) {
             path_edges.push(pid + "-" + current_id);
-            console.log(path_edges);
-            console.log(path_nodes);
             get_multi_path_nodes(network, pid, end, path_nodes, path_edges);
         }
     }
 }
-
-function get_path_nodes(network, start, end) {
-    var current_id = start;
-    var path_nodes = [];
-    while (current_id !== end) {
-        path_nodes.push(current_id);
-        current_id = network.getConnectedNodes(current_id, "from")[0];
-    }
-    path_nodes.push(current_id);
-    return path_nodes;
-}
-
 
 function reset_path_color(edges, nodes, color) {
     for (edge of edges) {
@@ -233,18 +222,19 @@ function reset_path_color(edges, nodes, color) {
     }
 }
 
-function change_path_color(network, vis_nodes, start, end, color) {
-    //var error_client = document.getElementById('cltbox').value;
-    //var error_target = document.getElementById('tgtbox').value;
+function change_path_color(network, vis_nodes, start, end, color, bypassed="") {
     var current_id = start;
     while (current_id !== end) {
         var current_node = vis_nodes.get(current_id);
+        console.log(current_node, bypassed);
         //var current_edge = network.body.data.nodes._data.get(current_id);
-        current_node.color = {
-            border: color,
-            background: color,
-        };
-        vis_nodes.update(current_node);
+        if (current_id !== bypassed) {
+            current_node.color = {
+                border: color,
+                background: color,
+            };
+            vis_nodes.update(current_node);
+        }
 
         var parent_id = network.getConnectedNodes(current_id, "from")[0];
         var current_edge = vis_edges.get(parent_id+'-'+current_id);
@@ -270,3 +260,13 @@ function get_edges(nodes, vis_edges) {
 }
 
 
+/*
+// Currently shut down the re-select option -- it leads to unnecessary complexity
+network.on('doubleClick', function(properties) {
+    var clicked_id = properties.nodes[0];
+    //var confirm_change = window.confirm(``);
+    sessionStorage.setItem('endpoint_id', clicked_id);
+    console.log('clicked node ' + clicked_id);
+    reset_everything(clicked_id);
+});
+*/

@@ -13,6 +13,22 @@ li a {
     color: green;
 }
 
+del {
+    text-decoration: none;
+    position: relative;
+}
+del:after {
+    content: ' ';
+    font-size: inherit;
+    display: block;
+    position: absolute;
+    right: 0;
+    left: 0;
+    top: 40%;
+    bottom: 40%;
+    border-top: 1px solid #000;
+    border-bottom: 1px solid #000;
+}
 
 body {
 	 background: #ffffff; /*#f0f0f0;*/
